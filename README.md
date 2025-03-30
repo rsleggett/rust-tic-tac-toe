@@ -1,6 +1,6 @@
 # Tic-Tac-Toe in Bevy
 
-This project is a simple implementation of Tic-Tac-Toe using the Bevy game engine, created as a test/learning experience with the Cursor IDE.
+This project is a simple implementation of Tic-Tac-Toe using the Bevy game engine, demonstrating AI-assisted development using the Cursor IDE.
 
 ## Features
 - Clean, modern UI with hover effects
@@ -19,5 +19,5 @@ This project is a simple implementation of Tic-Tac-Toe using the Bevy game engin
 ## Credits
 Victory sound effect converted from MP3 to OGG format, originally created by [celestialghost8](https://opengameart.org/content/victory) and licensed under CC0.
 
-## Development
-This project was created as an experiment in pair programming with Cursor IDE, exploring its AI-assisted development capabilities while learning the Bevy game engine. 
+## Development Process
+This project started as a basic Tic-Tac-Toe implementation and was enhanced through AI-assisted development using Cursor IDE. Rather than traditional pair programming, it demonstrates how AI can assist in completing and enhancing a codebase with minimal human intervention - taking a basic board implementation and adding features like win detection, victory celebrations, and proper game state management through high-level instructions. 
