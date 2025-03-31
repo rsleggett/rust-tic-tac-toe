@@ -1,6 +1,10 @@
 pub mod window;
 pub mod board;
 pub mod camera;
+pub mod game_logic;
+pub mod victory;
 pub use window::*;
 pub use board::*;
 pub use camera::*;
+pub use game_logic::*;
+pub use victory::*;

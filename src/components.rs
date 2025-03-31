@@ -18,7 +18,13 @@ pub struct Square {
 }
 
 #[derive(Component)]
+pub struct HoverSquare;
+
+#[derive(Component)]
 pub struct VictoryText;
+
+#[derive(Component)]
+pub struct ResetButton;
 
 #[derive(Resource)]
 pub struct CurrentPlayer(pub u8);
