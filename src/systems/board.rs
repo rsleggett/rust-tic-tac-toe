@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crate::constants::*;
-use crate::components::{Square, CurrentPlayer, BoardState, Piece, GameState, VictoryText, ResetButton, HoverSquare};
+use crate::components::{Square, HoverSquare};
 
 pub fn spawn_board(mut commands: Commands, windows: Query<&Window>) {
     let window = windows.single();

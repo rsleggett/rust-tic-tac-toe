@@ -3,21 +3,16 @@ mod components;
 mod constants;
 mod systems;
 
-use components::*;
+use components::{CurrentPlayer, BoardState, GameState};
 use systems::board::{spawn_board, handle_hover};
 use systems::game_logic::handle_mouse_clicks;
 use systems::victory::{handle_victory_state, handle_reset_button};
 use systems::camera::spawn_camera;
+use systems::window::create_window;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "Tic Tac Toe".into(),
-                ..default()
-            }),
-            ..default()
-        }))
+        .add_plugins(DefaultPlugins.set(create_window()))
         .insert_resource(CurrentPlayer(1))
         .insert_resource(BoardState {
             board: [[None; 3]; 3],
