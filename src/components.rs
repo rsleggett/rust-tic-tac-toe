@@ -1,15 +1,7 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Board;
-
-#[derive(Component)]
 pub struct Piece;
-
-#[derive(Component)]
-pub struct Player {
-    pub id: u8,
-}
 
 #[derive(Component)]
 pub struct Square {
@@ -44,14 +36,12 @@ pub struct GameState {
 #[derive(Resource)]
 pub struct BoardState {
     pub board: [[Option<u8>; 3]; 3],
-    pub current_player: u8,
 }
 
 impl Default for BoardState {
     fn default() -> Self {
         BoardState {
             board: [[None; 3]; 3],
-            current_player: 1,
         }
     }
 }

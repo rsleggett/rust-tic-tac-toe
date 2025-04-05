@@ -17,7 +17,7 @@ pub fn spawn_board(mut commands: Commands, windows: Query<&Window>) {
                 SpriteBundle {
                     sprite: Sprite {
                         custom_size: Some(Vec2::new(square_size, square_size)),
-                        color: Color::rgb(0.1, 0.1, 0.1),
+                        color: Color::srgb(0.1, 0.1, 0.1),
                         ..default()
                     },
                     transform: Transform::from_xyz(pos_x, pos_y, 0.0),
@@ -30,7 +30,7 @@ pub fn spawn_board(mut commands: Commands, windows: Query<&Window>) {
 
     // Add grid lines
     let line_thickness = 4.0;
-    let line_color = Color::rgb(0.2, 0.2, 0.2);
+    let line_color = Color::srgb(0.2, 0.2, 0.2);
 
     // Vertical lines
     for x in 1..3 {
@@ -65,7 +65,7 @@ pub fn spawn_board(mut commands: Commands, windows: Query<&Window>) {
         SpriteBundle {
             sprite: Sprite {
                 custom_size: Some(Vec2::new(square_size, square_size)),
-                color: Color::rgba(0.3, 0.3, 0.3, 0.5),
+                color: Color::srgba(0.3, 0.3, 0.3, 0.5),
                 ..default()
             },
             transform: Transform::from_xyz(0.0, 0.0, 0.5),

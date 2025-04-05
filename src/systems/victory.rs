@@ -75,7 +75,7 @@ pub fn handle_victory_state(
                         align_items: AlignItems::Center,
                         ..default()
                     },
-                    background_color: Color::rgb(0.15, 0.15, 0.15).into(),
+                    background_color: Color::srgb(0.15, 0.15, 0.15).into(),
                     ..default()
                 },
                 ResetButton,
@@ -129,13 +129,13 @@ pub fn handle_reset_button(
                 }
 
                 // Change button color when pressed
-                *color = Color::rgb(0.35, 0.35, 0.35).into();
+                *color = Color::srgb(0.35, 0.35, 0.35).into();
             }
             Interaction::Hovered => {
-                *color = Color::rgb(0.25, 0.25, 0.25).into();
+                *color = Color::srgb(0.25, 0.25, 0.25).into();
             }
             Interaction::None => {
-                *color = Color::rgb(0.15, 0.15, 0.15).into();
+                *color = Color::srgb(0.15, 0.15, 0.15).into();
             }
         }
     }

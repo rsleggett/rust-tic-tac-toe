@@ -109,9 +109,9 @@ pub fn handle_mouse_clicks(
 fn spawn_piece(commands: &mut Commands, player: u8, pos: Vec2, size: f32) {
     let piece_size = size * 0.8;
     let piece_color = if player == 1 {
-        Color::rgb(1.0, 0.0, 0.0) // Red
+        Color::srgb(1.0, 0.0, 0.0) // Red
     } else {
-        Color::rgb(0.0, 0.0, 1.0) // Blue
+        Color::srgb(0.0, 0.0, 1.0) // Blue
     };
     
     if player == 1 {
