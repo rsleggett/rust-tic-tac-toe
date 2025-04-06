@@ -196,214 +196,247 @@ fn spawn_piece(commands: &mut Commands, player: u8, pos: Vec2, size: f32) {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_win_conditions() {
-        // Test with 4x4 board
-        let board_size = 4;
-        let mut board = vec![vec![None; board_size]; board_size];
-
-        // Test row win
-        board[0] = vec![Some(1), Some(1), Some(1), Some(1)];
-        assert_eq!(check_win_condition(&board, board_size), Some(1));
-
-        // Test column win
-        board = vec![vec![None; board_size]; board_size];
-        for row in 0..board_size {
-            board[row][0] = Some(2);
-        }
-        assert_eq!(check_win_condition(&board, board_size), Some(2));
-
-        // Test main diagonal win
-        board = vec![vec![None; board_size]; board_size];
-        for i in 0..board_size {
-            board[i][i] = Some(1);
-        }
-        assert_eq!(check_win_condition(&board, board_size), Some(1));
-
-        // Test counter diagonal win
-        board = vec![vec![None; board_size]; board_size];
-        for i in 0..board_size {
-            board[i][board_size - 1 - i] = Some(2);
-        }
-        assert_eq!(check_win_condition(&board, board_size), Some(2));
-
-        // Test no win
-        board = vec![vec![None; board_size]; board_size];
-        assert_eq!(check_win_condition(&board, board_size), None);
+    // Helper function to create a board of a given size
+    fn create_board(size: usize) -> Vec<Vec<Option<u8>>> {
+        vec![vec![None; size]; size]
     }
 
-    #[test]
-    fn test_near_wins() {
-        let board_size = 4;
-        let mut board = vec![vec![None; board_size]; board_size];
+    mod win_conditions {
+        use super::*;
 
-        // Test near win in row
-        board[0] = vec![Some(1), Some(1), Some(1), Some(2)];
-        assert_eq!(check_win_condition(&board, board_size), None);
+        #[test]
+        fn test_row_win_4x4() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            board[0] = vec![Some(1), Some(1), Some(1), Some(1)];
+            assert_eq!(check_win_condition(&board, board_size), Some(1));
+        }
 
-        // Test near win in column
-        board = vec![vec![None; board_size]; board_size];
-        for row in 0..board_size - 1 {
-            board[row][0] = Some(2);
-        }
-        board[board_size - 1][0] = Some(1);
-        assert_eq!(check_win_condition(&board, board_size), None);
-
-        // Test near win in main diagonal
-        board = vec![vec![None; board_size]; board_size];
-        for i in 0..board_size - 1 {
-            board[i][i] = Some(1);
-        }
-        board[board_size - 1][board_size - 1] = Some(2);
-        assert_eq!(check_win_condition(&board, board_size), None);
-
-        // Test near win in counter diagonal
-        board = vec![vec![None; board_size]; board_size];
-        for i in 0..board_size - 1 {
-            board[i][board_size - 1 - i] = Some(2);
-        }
-        board[board_size - 1][0] = Some(1);
-        assert_eq!(check_win_condition(&board, board_size), None);
-    }
-
-    #[test]
-    fn test_different_board_sizes() {
-        // Test 3x3 board
-        let board_size = 3;
-        let mut board = vec![vec![None; board_size]; board_size];
-        
-        // Test row win on 3x3
-        board[0] = vec![Some(1), Some(1), Some(1)];
-        assert_eq!(check_win_condition(&board, board_size), Some(1));
-        
-        // Test 5x5 board
-        let board_size = 5;
-        let mut board = vec![vec![None; board_size]; board_size];
-        
-        // Test row win on 5x5
-        board[0] = vec![Some(2), Some(2), Some(2), Some(2), Some(2)];
-        assert_eq!(check_win_condition(&board, board_size), Some(2));
-        
-        // Test column win on 5x5
-        board = vec![vec![None; board_size]; board_size];
-        for row in 0..board_size {
-            board[row][0] = Some(1);
-        }
-        assert_eq!(check_win_condition(&board, board_size), Some(1));
-        
-        // Test main diagonal win on 5x5
-        board = vec![vec![None; board_size]; board_size];
-        for i in 0..board_size {
-            board[i][i] = Some(2);
-        }
-        assert_eq!(check_win_condition(&board, board_size), Some(2));
-        
-        // Test counter diagonal win on 5x5
-        board = vec![vec![None; board_size]; board_size];
-        for i in 0..board_size {
-            board[i][board_size - 1 - i] = Some(1);
-        }
-        assert_eq!(check_win_condition(&board, board_size), Some(1));
-    }
-
-    #[test]
-    fn test_draw_conditions() {
-        // Test 4x4 draw
-        let board_size = 4;
-        let mut board = vec![vec![None; board_size]; board_size];
-        
-        // Fill board with a pattern that doesn't create a win
-        // 1 2 2 1
-        // 2 1 1 2
-        // 1 2 2 1
-        // 2 1 1 2
-        let pattern = vec![
-            vec![1, 2, 2, 1],
-            vec![2, 1, 1, 2],
-            vec![1, 2, 2, 1],
-            vec![2, 1, 1, 2],
-        ];
-        for y in 0..board_size {
-            for x in 0..board_size {
-                board[y][x] = Some(pattern[y][x]);
+        #[test]
+        fn test_column_win_4x4() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            for row in 0..board_size {
+                board[row][0] = Some(2);
             }
+            assert_eq!(check_win_condition(&board, board_size), Some(2));
         }
-        assert_eq!(check_win_condition(&board, board_size), None);
-        
-        // Test 5x5 draw
-        let board_size = 5;
-        let mut board = vec![vec![None; board_size]; board_size];
-        
-        // Fill board with a pattern that doesn't create a win
-        // 1 2 2 1 2
-        // 2 1 1 2 1
-        // 1 2 2 1 2
-        // 2 1 1 2 1
-        // 1 2 2 1 2
-        let pattern = vec![
-            vec![1, 2, 2, 1, 2],
-            vec![2, 1, 1, 2, 1],
-            vec![1, 2, 2, 1, 2],
-            vec![2, 1, 1, 2, 1],
-            vec![1, 2, 2, 1, 2],
-        ];
-        for y in 0..board_size {
-            for x in 0..board_size {
-                board[y][x] = Some(pattern[y][x]);
+
+        #[test]
+        fn test_main_diagonal_win_4x4() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            for i in 0..board_size {
+                board[i][i] = Some(1);
             }
+            assert_eq!(check_win_condition(&board, board_size), Some(1));
         }
-        assert_eq!(check_win_condition(&board, board_size), None);
+
+        #[test]
+        fn test_counter_diagonal_win_4x4() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            for i in 0..board_size {
+                board[i][board_size - 1 - i] = Some(2);
+            }
+            assert_eq!(check_win_condition(&board, board_size), Some(2));
+        }
+
+        #[test]
+        fn test_no_win_4x4() {
+            let board_size = 4;
+            let board = create_board(board_size);
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
     }
 
-    #[test]
-    fn test_edge_cases() {
-        // Test empty board
-        let board_size = 4;
-        let board = vec![vec![None; board_size]; board_size];
-        assert_eq!(check_win_condition(&board, board_size), None);
-        
-        // Test board with only one move
-        let mut board = vec![vec![None; board_size]; board_size];
-        board[0][0] = Some(1);
-        assert_eq!(check_win_condition(&board, board_size), None);
-        
-        // Test board with scattered moves (no win)
-        board = vec![vec![None; board_size]; board_size];
-        // Create a pattern that doesn't form any winning lines
-        // 1 2 _ _
-        // 2 1 _ _
-        // _ _ 2 1
-        // _ _ 1 2
-        board[0][0] = Some(1);
-        board[0][1] = Some(2);
-        board[1][0] = Some(2);
-        board[1][1] = Some(1);
-        board[2][2] = Some(2);
-        board[2][3] = Some(1);
-        board[3][2] = Some(1);
-        board[3][3] = Some(2);
-        assert_eq!(check_win_condition(&board, board_size), None);
-        
-        // Test board with almost full board but no win
-        board = vec![vec![None; board_size]; board_size];
-        // Fill with a pattern that doesn't create a win
-        // 1 2 2 1
-        // 2 1 1 2
-        // 1 2 2 1
-        // 2 _ 1 2
-        let pattern = vec![
-            vec![1, 2, 2, 1],
-            vec![2, 1, 1, 2],
-            vec![1, 2, 2, 1],
-            vec![2, 0, 1, 2],  // 0 represents empty cell
-        ];
-        for y in 0..board_size {
-            for x in 0..board_size {
-                if pattern[y][x] != 0 {
+    mod near_wins {
+        use super::*;
+
+        #[test]
+        fn test_near_win_in_row() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            board[0] = vec![Some(1), Some(1), Some(1), Some(2)];
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+
+        #[test]
+        fn test_near_win_in_column() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            for row in 0..board_size - 1 {
+                board[row][0] = Some(2);
+            }
+            board[board_size - 1][0] = Some(1);
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+
+        #[test]
+        fn test_near_win_in_main_diagonal() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            for i in 0..board_size - 1 {
+                board[i][i] = Some(1);
+            }
+            board[board_size - 1][board_size - 1] = Some(2);
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+
+        #[test]
+        fn test_near_win_in_counter_diagonal() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            for i in 0..board_size - 1 {
+                board[i][board_size - 1 - i] = Some(2);
+            }
+            board[board_size - 1][0] = Some(1);
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+    }
+
+    mod different_board_sizes {
+        use super::*;
+
+        #[test]
+        fn test_row_win_3x3() {
+            let board_size = 3;
+            let mut board = create_board(board_size);
+            board[0] = vec![Some(1), Some(1), Some(1)];
+            assert_eq!(check_win_condition(&board, board_size), Some(1));
+        }
+
+        #[test]
+        fn test_row_win_5x5() {
+            let board_size = 5;
+            let mut board = create_board(board_size);
+            board[0] = vec![Some(2), Some(2), Some(2), Some(2), Some(2)];
+            assert_eq!(check_win_condition(&board, board_size), Some(2));
+        }
+
+        #[test]
+        fn test_column_win_5x5() {
+            let board_size = 5;
+            let mut board = create_board(board_size);
+            for row in 0..board_size {
+                board[row][0] = Some(1);
+            }
+            assert_eq!(check_win_condition(&board, board_size), Some(1));
+        }
+
+        #[test]
+        fn test_main_diagonal_win_5x5() {
+            let board_size = 5;
+            let mut board = create_board(board_size);
+            for i in 0..board_size {
+                board[i][i] = Some(2);
+            }
+            assert_eq!(check_win_condition(&board, board_size), Some(2));
+        }
+
+        #[test]
+        fn test_counter_diagonal_win_5x5() {
+            let board_size = 5;
+            let mut board = create_board(board_size);
+            for i in 0..board_size {
+                board[i][board_size - 1 - i] = Some(1);
+            }
+            assert_eq!(check_win_condition(&board, board_size), Some(1));
+        }
+    }
+
+    mod draw_conditions {
+        use super::*;
+
+        #[test]
+        fn test_draw_4x4() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            let pattern = vec![
+                vec![1, 2, 2, 1],
+                vec![2, 1, 1, 2],
+                vec![1, 2, 2, 1],
+                vec![2, 1, 1, 2],
+            ];
+            for y in 0..board_size {
+                for x in 0..board_size {
                     board[y][x] = Some(pattern[y][x]);
                 }
             }
+            assert_eq!(check_win_condition(&board, board_size), None);
         }
-        assert_eq!(check_win_condition(&board, board_size), None);
+
+        #[test]
+        fn test_draw_5x5() {
+            let board_size = 5;
+            let mut board = create_board(board_size);
+            let pattern = vec![
+                vec![1, 2, 2, 1, 2],
+                vec![2, 1, 1, 2, 1],
+                vec![1, 2, 2, 1, 2],
+                vec![2, 1, 1, 2, 1],
+                vec![1, 2, 2, 1, 2],
+            ];
+            for y in 0..board_size {
+                for x in 0..board_size {
+                    board[y][x] = Some(pattern[y][x]);
+                }
+            }
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+    }
+
+    mod edge_cases {
+        use super::*;
+
+        #[test]
+        fn test_empty_board() {
+            let board_size = 4;
+            let board = create_board(board_size);
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+
+        #[test]
+        fn test_single_move() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            board[0][0] = Some(1);
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+
+        #[test]
+        fn test_scattered_moves() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            board[0][0] = Some(1);
+            board[0][1] = Some(2);
+            board[1][0] = Some(2);
+            board[1][1] = Some(1);
+            board[2][2] = Some(2);
+            board[2][3] = Some(1);
+            board[3][2] = Some(1);
+            board[3][3] = Some(2);
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
+
+        #[test]
+        fn test_almost_full_board() {
+            let board_size = 4;
+            let mut board = create_board(board_size);
+            let pattern = vec![
+                vec![1, 2, 2, 1],
+                vec![2, 1, 1, 2],
+                vec![1, 2, 2, 1],
+                vec![2, 0, 1, 2],  // 0 represents empty cell
+            ];
+            for y in 0..board_size {
+                for x in 0..board_size {
+                    if pattern[y][x] != 0 {
+                        board[y][x] = Some(pattern[y][x]);
+                    }
+                }
+            }
+            assert_eq!(check_win_condition(&board, board_size), None);
+        }
     }
 } 

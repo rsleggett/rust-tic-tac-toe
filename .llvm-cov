@@ -1,0 +1,7 @@
+{
+    "include_files": [
+        "src/systems/game_logic.rs",
+        "src/systems/board.rs",
+        "src/systems/victory.rs"
+    ]
+} 
