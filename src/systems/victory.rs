@@ -112,7 +112,7 @@ pub fn handle_reset_button(
                 // Reset game state
                 game_state.game_over = false;
                 game_state.winner = None;
-                board_state.board = [[None; 3]; 3];
+                board_state.board = [[None; 4]; 4];
                 current_player.0 = 1;
 
                 // Remove all pieces

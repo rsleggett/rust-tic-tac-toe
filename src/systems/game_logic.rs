@@ -2,10 +2,10 @@ use bevy::prelude::*;
 use crate::constants::*;
 use crate::components::{Square, CurrentPlayer, BoardState, Piece, GameState, HoverSquare};
 
-pub fn check_win_condition(board: &[[Option<u8>; 3]; 3]) -> Option<u8> {
+pub fn check_win_condition(board: &[[Option<u8>; 4]; 4]) -> Option<u8> {
     // Check rows
     for row in board.iter() {
-        if row[0] == row[1] && row[1] == row[2] {
+        if row[0] == row[1] && row[1] == row[2] && row[2] == row[3] {
             if let Some(player) = row[0] {
                 return Some(player);
             }
@@ -13,8 +13,8 @@ pub fn check_win_condition(board: &[[Option<u8>; 3]; 3]) -> Option<u8> {
     }
 
     // Check columns
-    for col in 0..3 {
-        if board[0][col] == board[1][col] && board[1][col] == board[2][col] {
+    for col in 0..4 {
+        if board[0][col] == board[1][col] && board[1][col] == board[2][col] && board[2][col] == board[3][col]{
             if let Some(player) = board[0][col] {
                 return Some(player);
             }
@@ -22,13 +22,13 @@ pub fn check_win_condition(board: &[[Option<u8>; 3]; 3]) -> Option<u8> {
     }
 
     // Check diagonals
-    if board[0][0] == board[1][1] && board[1][1] == board[2][2] {
+    if board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[2][2] == board[3][3] {
         if let Some(player) = board[1][1] {
             return Some(player);
         }
     }
-    if board[0][2] == board[1][1] && board[1][1] == board[2][0] {
-        if let Some(player) = board[1][1] {
+    if board[0][3] == board[1][2] && board[1][2] == board[2][1] && board[2][1] == board[3][0] {
+        if let Some(player) = board[1][2] {
             return Some(player);
         }
     }
@@ -58,7 +58,7 @@ pub fn handle_mouse_clicks(
 
     let window = windows.single();
     let board_size = window.resolution.height() - PADDING * 2.0;
-    let square_size = board_size / 3.0;
+    let square_size = board_size / 4.0;
     
     if buttons.just_pressed(MouseButton::Left) {
         if let Some(cursor_pos) = window.cursor_position() {
@@ -191,5 +191,180 @@ fn spawn_piece(commands: &mut Commands, player: u8, pos: Vec2, size: f32) {
             },
             Piece,
         ));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Helper function to create an empty board
+    fn empty_board() -> [[Option<u8>; 4]; 4] {
+        [[None; 4]; 4]
+    }
+
+    // Helper function to create a board with a specific pattern
+    fn create_board(pattern: &[&[Option<u8>]]) -> [[Option<u8>; 4]; 4] {
+        let mut board = empty_board();
+        for (i, row) in pattern.iter().enumerate() {
+            for (j, &cell) in row.iter().enumerate() {
+                if i < 4 && j < 4 {
+                    board[i][j] = cell;
+                }
+            }
+        }
+        board
+    }
+
+    #[test]
+    fn test_no_win() {
+        let board = empty_board();
+        assert_eq!(check_win_condition(&board), None);
+    }
+
+    #[test]
+    fn test_row_win() {
+        // Test each row for a win
+        for row in 0..4 {
+            let mut board = empty_board();
+            board[row] = [Some(1), Some(1), Some(1), Some(1)];
+            assert_eq!(check_win_condition(&board), Some(1));
+        }
+    }
+
+    #[test]
+    fn test_column_win() {
+        // Test each column for a win
+        for col in 0..4 {
+            let mut board = empty_board();
+            for row in 0..4 {
+                board[row][col] = Some(1);
+            }
+            assert_eq!(check_win_condition(&board), Some(1));
+        }
+    }
+
+    #[test]
+    fn test_diagonal_win() {
+        // Test main diagonal (top-left to bottom-right)
+        let mut board = empty_board();
+        for i in 0..4 {
+            board[i][i] = Some(1);
+        }
+        assert_eq!(check_win_condition(&board), Some(1));
+
+        // Test counter diagonal (top-right to bottom-left)
+        let mut board = empty_board();
+        for i in 0..4 {
+            board[i][3-i] = Some(1);
+        }
+        assert_eq!(check_win_condition(&board), Some(1));
+    }
+
+    #[test]
+    fn test_player_2_win() {
+        // Test that player 2 can win
+        let mut board = empty_board();
+        for i in 0..4 {
+            board[i][i] = Some(2);
+        }
+        assert_eq!(check_win_condition(&board), Some(2));
+    }
+
+    #[test]
+    fn test_partial_board() {
+        // Test a partially filled board with no win
+        // The previous pattern had a diagonal win for player 1
+        // Let's create a new pattern that doesn't have any win conditions
+        let board = create_board(&[
+            &[Some(1), Some(2), None, None],
+            &[None, Some(2), Some(1), None],
+            &[None, None, Some(2), Some(1)],
+            &[Some(2), None, None, Some(2)],
+        ]);
+        assert_eq!(check_win_condition(&board), None);
+    }
+
+    #[test]
+    fn test_almost_win() {
+        // Test a board that's almost a win but not quite
+        let mut board = empty_board();
+        for i in 0..3 {
+            board[i][i] = Some(1);
+        }
+        assert_eq!(check_win_condition(&board), None);
+    }
+
+    #[test]
+    fn test_draw_game() {
+        // Test a full board with no winner
+        // Adjust the pattern to avoid any winning combinations
+        let board = create_board(&[
+            &[Some(1), Some(2), Some(1), Some(2)],
+            &[Some(2), Some(1), Some(2), Some(1)],
+            &[Some(2), Some(1), Some(2), Some(1)],
+            &[Some(1), Some(2), Some(1), Some(2)],
+        ]);
+        assert_eq!(check_win_condition(&board), None);
+    }
+
+    #[test]
+    fn test_alternating_pattern() {
+        // Test a pattern that alternates players but doesn't result in a win
+        let board = create_board(&[
+            &[Some(1), Some(2), Some(1), None],
+            &[Some(2), Some(1), Some(2), None],
+            &[Some(2), Some(1), Some(2), None],
+            &[Some(1), Some(2), Some(1), None],
+        ]);
+        assert_eq!(check_win_condition(&board), None);
+    }
+
+    #[test]
+    fn test_near_wins() {
+        // Test near-win in a row
+        let mut board = empty_board();
+        board[0] = [Some(1), Some(1), Some(1), Some(2)];
+        assert_eq!(check_win_condition(&board), None);
+
+        // Test near-win in a column
+        let mut board = empty_board();
+        for i in 0..3 {
+            board[i][0] = Some(1);
+        }
+        board[3][0] = Some(2);
+        assert_eq!(check_win_condition(&board), None);
+
+        // Test near-win in main diagonal
+        let mut board = empty_board();
+        for i in 0..3 {
+            board[i][i] = Some(1);
+        }
+        board[3][3] = Some(2);
+        assert_eq!(check_win_condition(&board), None);
+
+        // Test near-win in counter diagonal
+        let mut board = empty_board();
+        for i in 0..3 {
+            board[i][3-i] = Some(1);
+        }
+        board[3][0] = Some(2);
+        assert_eq!(check_win_condition(&board), None);
+    }
+
+    #[test]
+    fn test_immediate_win_detection() {
+        // Test that a win is detected as soon as it occurs
+        let mut board = empty_board();
+        
+        // Set up almost-win condition
+        for i in 0..3 {
+            board[0][i] = Some(1);
+        }
+        assert_eq!(check_win_condition(&board), None);
+        
+        // Complete the win
+        board[0][3] = Some(1);
+        assert_eq!(check_win_condition(&board), Some(1));
     }
 } 

@@ -15,7 +15,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(create_window()))
         .insert_resource(CurrentPlayer(1))
         .insert_resource(BoardState {
-            board: [[None; 3]; 3]
+            board: [[None; 4]; 4]
         })
         .insert_resource(GameState {
             game_over: false,

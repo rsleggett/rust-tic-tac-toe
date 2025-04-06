@@ -35,13 +35,13 @@ pub struct GameState {
 
 #[derive(Resource)]
 pub struct BoardState {
-    pub board: [[Option<u8>; 3]; 3],
+    pub board: [[Option<u8>; 4]; 4],
 }
 
 impl Default for BoardState {
     fn default() -> Self {
         BoardState {
-            board: [[None; 3]; 3],
+            board: [[None; 4]; 4],
         }
     }
 }
