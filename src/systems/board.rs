@@ -1,17 +1,17 @@
 use bevy::prelude::*;
 use crate::constants::*;
-use crate::components::{Square, HoverSquare};
+use crate::components::{Square, HoverSquare, GameState};
 
-pub fn spawn_board(mut commands: Commands, windows: Query<&Window>) {
+pub fn spawn_board(mut commands: Commands, windows: Query<&Window>, game_state: Res<GameState>) {
     let window = windows.single();
     let board_size = window.resolution.height() - PADDING * 2.0;
-    let square_size = board_size / 4.0;
+    let square_size = board_size / game_state.board_size as f32;
 
     // Create the board squares
-    for y in 0..4 {
-        for x in 0..4 {
-            let pos_x = (x as f32 - 1.5) * square_size;
-            let pos_y = (y as f32 - 1.5) * square_size;
+    for y in 0..game_state.board_size {
+        for x in 0..game_state.board_size {
+            let pos_x = (x as f32 - (game_state.board_size as f32 - 1.0) / 2.0) * square_size;
+            let pos_y = (y as f32 - (game_state.board_size as f32 - 1.0) / 2.0) * square_size;
 
             commands.spawn((
                 SpriteBundle {
@@ -33,8 +33,8 @@ pub fn spawn_board(mut commands: Commands, windows: Query<&Window>) {
     let line_color = Color::srgb(0.2, 0.2, 0.2);
 
     // Vertical lines
-    for x in 1..4 {
-        let pos_x = (x as f32 - 2.0) * square_size;
+    for x in 1..game_state.board_size {
+        let pos_x = (x as f32 - game_state.board_size as f32 / 2.0) * square_size;
         commands.spawn(SpriteBundle {
             sprite: Sprite {
                 custom_size: Some(Vec2::new(line_thickness, board_size)),
@@ -47,8 +47,8 @@ pub fn spawn_board(mut commands: Commands, windows: Query<&Window>) {
     }
 
     // Horizontal lines
-    for y in 1..4 {
-        let pos_y = (y as f32 - 2.0) * square_size;
+    for y in 1..game_state.board_size {
+        let pos_y = (y as f32 - game_state.board_size as f32 / 2.0) * square_size;
         commands.spawn(SpriteBundle {
             sprite: Sprite {
                 custom_size: Some(Vec2::new(board_size, line_thickness)),
@@ -80,10 +80,11 @@ pub fn handle_hover(
     windows: Query<&Window>,
     mut hover_query: Query<(&mut Transform, &mut Visibility), With<HoverSquare>>,
     square_query: Query<(&Square, &Transform), Without<HoverSquare>>,
+    game_state: Res<GameState>,
 ) {
     let window = windows.single();
     let board_size = window.resolution.height() - PADDING * 2.0;
-    let square_size = board_size / 4.0;
+    let square_size = board_size / game_state.board_size as f32;
 
     if let Some(cursor_pos) = window.cursor_position() {
         let board_pos = Vec2::new(

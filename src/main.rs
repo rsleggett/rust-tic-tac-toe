@@ -14,13 +14,8 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(create_window()))
         .insert_resource(CurrentPlayer(1))
-        .insert_resource(BoardState {
-            board: [[None; 4]; 4]
-        })
-        .insert_resource(GameState {
-            game_over: false,
-            winner: None,
-        })
+        .insert_resource(BoardState::default())
+        .insert_resource(GameState::default())
         .add_systems(Startup, (spawn_camera, spawn_board))
         .add_systems(Update, (
             handle_hover,
