@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::constants::BOARD_SIZE;
 
 #[derive(Component)]
 pub struct Piece;
@@ -27,21 +28,33 @@ impl Default for CurrentPlayer {
     }
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource)]
 pub struct GameState {
     pub winner: Option<u8>,
     pub game_over: bool,
+    pub board_size: usize,
+}
+
+impl Default for GameState {
+    fn default() -> Self {
+        Self {
+            winner: None,
+            game_over: false,
+            board_size: BOARD_SIZE as usize,
+        }
+    }
 }
 
 #[derive(Resource)]
 pub struct BoardState {
-    pub board: [[Option<u8>; 3]; 3],
+    pub board: Vec<Vec<Option<u8>>>,
 }
 
 impl Default for BoardState {
     fn default() -> Self {
-        BoardState {
-            board: [[None; 3]; 3],
+        let size = BOARD_SIZE as usize;
+        Self {
+            board: vec![vec![None; size]; size],
         }
     }
 }
